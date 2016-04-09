@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'BSDropdown_Example', :exclusive => true do
+  pod 'BSDropdown', :path => '../'
+end
+
+target 'BSDropdown_Tests', :exclusive => true do
+  pod 'BSDropdown', :path => '../'
+
+  
+end
