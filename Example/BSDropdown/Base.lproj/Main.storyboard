@@ -19,27 +19,36 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hFW-1y-IBW" customClass="BSDropdown" customModule="BSDropdown">
                                 <rect key="frame" x="200" y="50" width="200" height="30"/>
+                                <color key="backgroundColor" red="0.14307650860000001" green="0.3033135776" blue="0.57176724140000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="200" id="O3v-1X-lgi"/>
                                     <constraint firstAttribute="height" constant="30" id="e3C-1M-84q"/>
                                 </constraints>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Button">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yzt-Rx-T58" customClass="BSDropdown" customModule="BSDropdown">
                                 <rect key="frame" x="200" y="100" width="200" height="30"/>
+                                <color key="backgroundColor" red="0.14307650860000001" green="0.3033135776" blue="0.57176724140000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="5R2-GL-N2D"/>
                                     <constraint firstAttribute="width" constant="200" id="PaU-VI-3Vs"/>
                                 </constraints>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Button">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQr-lP-2cS" customClass="BSDropdown" customModule="BSDropdown">
                                 <rect key="frame" x="200" y="150" width="200" height="30"/>
+                                <color key="backgroundColor" red="0.14307650860000001" green="0.3033135776" blue="0.57176724140000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="200" id="Wil-ra-i9p"/>
                                     <constraint firstAttribute="height" constant="30" id="uyM-FC-eBp"/>
                                 </constraints>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Button">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

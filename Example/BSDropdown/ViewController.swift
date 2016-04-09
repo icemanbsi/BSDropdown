@@ -86,6 +86,8 @@ class ViewController: UIViewController, BSDropdownDelegate {
         self.bsdThird.title = "Third Dropdown"
         self.bsdThird.defaultTitle = "No Done Button"
         self.bsdThird.hideDoneButton = true
+        self.bsdThird.headerBackgroundColor = UIColor(red: 36.0/255.0, green: 77.0/255.0, blue: 146.0/255.0, alpha: 1.0)
+        self.bsdThird.itemTintColor = self.bsdThird.headerBackgroundColor
         self.bsdThird.setup()
         self.bsdThird.setDataSource(firstOptions)
     }
@@ -98,7 +100,11 @@ class ViewController: UIViewController, BSDropdownDelegate {
 
     // -- Mark: BSDropdownDelegate
     func onDropdownSelectedItemChange(dropdown: BSDropdown, selectedItem: NSDictionary?) {
-        
+        if dropdown == self.bsdFirst {
+            if let item = selectedItem {
+                NSLog("bsdFirst selected item change : \(item.objectForKey("value") as! String)")
+            }
+        }
     }
 }
 
