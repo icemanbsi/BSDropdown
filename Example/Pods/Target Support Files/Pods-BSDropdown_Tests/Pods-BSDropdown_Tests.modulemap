@@ -1,0 +1,6 @@
+framework module Pods_BSDropdown_Tests {
+  umbrella header "Pods-BSDropdown_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

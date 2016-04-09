@@ -1,0 +1,6 @@
+framework module BSDropdown {
+  umbrella header "BSDropdown-umbrella.h"
+
+  export *
+  module * { export * }
+}
