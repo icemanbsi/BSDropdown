@@ -1,6 +1,6 @@
 //
 //  BSDropdown.swift
-//  V1.0
+//  V1.2
 //
 //  Items selector with a pop up table list view.
 //  You can use a NSMutableArray of NSDictionary for the data source
@@ -8,7 +8,9 @@
 //  Created by Bobby Stenly Irawan ( iceman.bsi@gmail.com - http://bobbystenly.com ) on 11/21/15.
 //  Copyright © 2015 Bobby Stenly Irawan. All rights reserved.
 //
-//
+//  New in V1.2
+//  - added DataSource Protocol for custom tableview cell / layout
+//  - added fixedDisplayedTitle to make the default title fixed (not change even the selected item has changed)
 
 import Foundation
 import UIKit
@@ -21,6 +23,11 @@ extension BSDropdownDelegate {
     }
 }
 
+public protocol BSDropdownDataSource {
+    func itemHeightForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> CGFloat
+    func itemForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> UITableViewCell
+}
+
 public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     //required attributes
     public var viewController: UIViewController?
@@ -28,6 +35,7 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     
     //optional attributes
     public var delegate: BSDropdownDelegate!
+    public var dataSource: BSDropdownDataSource!
     public var modalBackgroundColor: UIColor = UIColor(white: 0, alpha: 0.5)
     public var selectorBackgroundColor: UIColor = UIColor(white: 1, alpha: 1)
     public var headerBackgroundColor: UIColor = UIColor(white: 0, alpha: 1)
@@ -48,6 +56,7 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     public var titleKey: String = "title"
     public var enableSearch: Bool = false
     public var searchPlaceholder: String = "Search"
+    public var fixedDisplayedTitle: Bool = false
     public var hideDoneButton: Bool = false
     //-- end of optional attributes
     
@@ -416,118 +425,141 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     
     public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let cellInfoArray = self.data?.objectAtIndex(indexPath.row) as! NSDictionary
-        let title = cellInfoArray.objectForKey(self.titleKey) as! String
-        let minHeight:CGFloat = 35.0
-        var height:CGFloat = 16.0
-        var maxWidth:CGFloat = tableView.bounds.size.width - 16.0
-        if indexPath.row == self.tempSelectedIndex {
-            maxWidth -= 39.0
+        if self.dataSource != nil {
+            return self.dataSource.itemHeightForRowAtIndexPath(self, tableView: tableView, item: cellInfoArray, indexPath: indexPath)
         }
-        
-        var titleHeight : CGFloat = title.boundingRectWithSize(
-            CGSizeMake(maxWidth, 99999),
-            options: NSStringDrawingOptions.UsesLineFragmentOrigin,
-            attributes: [NSFontAttributeName: self.itemFont!],
-            context: nil
-            ).size.height
-        if titleHeight < 20 {
-            titleHeight = 20
+        else {
+            let title = cellInfoArray.objectForKey(self.titleKey) as! String
+            let minHeight:CGFloat = 35.0
+            var height:CGFloat = 16.0
+            var maxWidth:CGFloat = tableView.bounds.size.width - 16.0
+            if indexPath.row == self.tempSelectedIndex {
+                maxWidth -= 39.0
+            }
+            
+            var titleHeight : CGFloat = title.boundingRectWithSize(
+                CGSizeMake(maxWidth, 99999),
+                options: NSStringDrawingOptions.UsesLineFragmentOrigin,
+                attributes: [NSFontAttributeName: self.itemFont!],
+                context: nil
+                ).size.height
+            if titleHeight < 20 {
+                titleHeight = 20
+            }
+            height += titleHeight
+            
+            return max(minHeight, height)
         }
-        height += titleHeight
-        
-        return max(minHeight, height)
     }
     
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let reuseId = "BSDropdownTableViewCell"
-        var cell: UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(reuseId)
-        let lblTitle: UILabel!
-        let borderBottom: UIView!
-        if let _ = cell {
-            lblTitle = cell?.viewWithTag(1) as! UILabel
-            borderBottom = cell?.viewWithTag(2)
-        }
-        else{
-            cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: reuseId)
-            
-            //add label
-            lblTitle = UILabel()
-            lblTitle.translatesAutoresizingMaskIntoConstraints = false
-            cell!.addSubview(lblTitle)
-            cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: cell,
-                attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1,
-                constant: 0))
-            cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
-                attribute: NSLayoutAttribute.Leading,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: cell,
-                attribute: NSLayoutAttribute.Leading,
-                multiplier: 1,
-                constant: 8))
-            cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
-                attribute: NSLayoutAttribute.Trailing,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: cell,
-                attribute: NSLayoutAttribute.Trailing,
-                multiplier: 1,
-                constant: 8))
-            lblTitle.tag = 1
-            lblTitle.textColor = self.itemTextColor
-            lblTitle.font = self.itemFont
-            
-            //add border bottom
-            borderBottom = UIView()
-            borderBottom.backgroundColor = UIColor(white: 0.8, alpha: 1)
-            borderBottom.translatesAutoresizingMaskIntoConstraints = false
-            cell!.addSubview(borderBottom)
-            cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                attribute: NSLayoutAttribute.Left,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: cell,
-                attribute: NSLayoutAttribute.Left,
-                multiplier: 1,
-                constant: 0))
-            cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                attribute: NSLayoutAttribute.Right,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: cell,
-                attribute: NSLayoutAttribute.Right,
-                multiplier: 1,
-                constant: 0))
-            cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: cell,
-                attribute: NSLayoutAttribute.Bottom,
-                multiplier: 1,
-                constant: 0))
-            cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
-                multiplier: 1,
-                constant: 1))
-            
-            cell?.selectionStyle = .None
-            cell?.tintColor = self.itemTintColor
-        }
-        
         let cellInfoArray = self.data?.objectAtIndex(indexPath.row) as! NSDictionary
-        lblTitle.text = cellInfoArray.objectForKey(self.titleKey) as? String
         
-        if indexPath.row == self.tempSelectedIndex {
-            cell?.accessoryType = UITableViewCellAccessoryType.Checkmark
+        if self.dataSource != nil {
+            let cell = self.dataSource.itemForRowAtIndexPath(self, tableView: tableView, item: cellInfoArray, indexPath: indexPath)
+            
+            cell.selectionStyle = .None
+            cell.tintColor = self.itemTintColor
+            
+            if indexPath.row == self.tempSelectedIndex {
+                cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            }
+            else{
+                cell.accessoryType = UITableViewCellAccessoryType.None
+            }
+            
+            return cell
         }
-        else{
-            cell?.accessoryType = UITableViewCellAccessoryType.None
+        else {
+            let reuseId = "BSDropdownTableViewCell"
+            var cell: UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(reuseId)
+            let lblTitle: UILabel!
+            let borderBottom: UIView!
+            if let _ = cell {
+                lblTitle = cell?.viewWithTag(1) as! UILabel
+                borderBottom = cell?.viewWithTag(2)
+            }
+            else{
+                cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: reuseId)
+                
+                //add label
+                lblTitle = UILabel()
+                lblTitle.translatesAutoresizingMaskIntoConstraints = false
+                cell!.addSubview(lblTitle)
+                cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
+                    attribute: NSLayoutAttribute.CenterY,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: cell,
+                    attribute: NSLayoutAttribute.CenterY,
+                    multiplier: 1,
+                    constant: 0))
+                cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
+                    attribute: NSLayoutAttribute.Leading,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: cell,
+                    attribute: NSLayoutAttribute.Leading,
+                    multiplier: 1,
+                    constant: 8))
+                cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
+                    attribute: NSLayoutAttribute.Trailing,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: cell,
+                    attribute: NSLayoutAttribute.Trailing,
+                    multiplier: 1,
+                    constant: 8))
+                lblTitle.tag = 1
+                lblTitle.textColor = self.itemTextColor
+                lblTitle.font = self.itemFont
+                
+                //add border bottom
+                borderBottom = UIView()
+                borderBottom.backgroundColor = UIColor(white: 0.8, alpha: 1)
+                borderBottom.translatesAutoresizingMaskIntoConstraints = false
+                cell!.addSubview(borderBottom)
+                cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
+                    attribute: NSLayoutAttribute.Left,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: cell,
+                    attribute: NSLayoutAttribute.Left,
+                    multiplier: 1,
+                    constant: 0))
+                cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
+                    attribute: NSLayoutAttribute.Right,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: cell,
+                    attribute: NSLayoutAttribute.Right,
+                    multiplier: 1,
+                    constant: 0))
+                cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
+                    attribute: NSLayoutAttribute.Bottom,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: cell,
+                    attribute: NSLayoutAttribute.Bottom,
+                    multiplier: 1,
+                    constant: 0))
+                cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
+                    attribute: NSLayoutAttribute.Height,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: nil,
+                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    multiplier: 1,
+                    constant: 1))
+                
+                cell?.selectionStyle = .None
+                cell?.tintColor = self.itemTintColor
+            }
+            
+            lblTitle.text = cellInfoArray.objectForKey(self.titleKey) as? String
+            
+            if indexPath.row == self.tempSelectedIndex {
+                cell?.accessoryType = UITableViewCellAccessoryType.Checkmark
+            }
+            else{
+                cell?.accessoryType = UITableViewCellAccessoryType.None
+            }
+            
+            return cell!
         }
-        
-        return cell!
     }
     
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -594,7 +626,12 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     private func setDisplayedTitle(){
         //set title
         if let value = self.getSelectedValue(){
-            self.setTitle(value.objectForKey(self.titleKey) as? String, forState: UIControlState.Normal)
+            if !self.fixedDisplayedTitle {
+                self.setTitle(value.objectForKey(self.titleKey) as? String, forState: UIControlState.Normal)
+            }
+            else {
+                self.setTitle(self.defaultTitle, forState: UIControlState.Normal)
+            }
         }
         else{
             self.setTitle(self.defaultTitle, forState: UIControlState.Normal)

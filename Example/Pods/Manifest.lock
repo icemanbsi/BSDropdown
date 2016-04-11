@@ -1,5 +1,5 @@
 PODS:
-  - BSDropdown (0.1.0)
+  - BSDropdown (1.1)
 
 DEPENDENCIES:
   - BSDropdown (from `../`)
@@ -9,6 +9,6 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  BSDropdown: a8a60861286da1d6eae4daa483a5a12045dbf42a
+  BSDropdown: 743e6dba5d89fbaaf8f6d67a07ecce4432a2deaf
 
 COCOAPODS: 0.39.0

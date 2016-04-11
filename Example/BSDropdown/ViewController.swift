@@ -9,11 +9,12 @@
 import UIKit
 import BSDropdown
 
-class ViewController: UIViewController, BSDropdownDelegate {
+class ViewController: UIViewController, BSDropdownDelegate, BSDropdownDataSource {
 
     @IBOutlet weak var bsdFirst: BSDropdown!
     @IBOutlet weak var bsdSecond: BSDropdown!
     @IBOutlet weak var bsdThird: BSDropdown!
+    @IBOutlet weak var bsdFourth: BSDropdown!
     
     
     override func viewDidLoad() {
@@ -90,6 +91,23 @@ class ViewController: UIViewController, BSDropdownDelegate {
         self.bsdThird.itemTintColor = self.bsdThird.headerBackgroundColor
         self.bsdThird.setup()
         self.bsdThird.setDataSource(firstOptions)
+        
+        //setting up fourth BSDropdown
+        self.bsdFourth.viewController = self
+        self.bsdFourth.dataSource = self
+        self.bsdFourth.title = "Fourth Dropdown"
+        self.bsdFourth.defaultTitle = "Custom View"
+        self.bsdFourth.setup()
+        let fourthOptions = NSMutableArray(array:[
+            ["title" : "Facebook",  "subtitle" : "A site that makes you realize you hate all your friends",     "icon" : "fb.png"],
+            ["title" : "Twitter",   "subtitle" : "Follow your interests",                                       "icon" : "twitter.png"],
+            ["title" : "Google +",  "subtitle" : "",                                                            "icon" : "gplus.png"],
+            ["title" : "Linked In", "subtitle" : "World's largest professional website",                        "icon" : "linkedin.png"],
+            ["title" : "Youtube",   "subtitle" : "Broadcast yourself",                                          "icon" : "youtube.png"],
+            ["title" : "Vimeo",     "subtitle" : "Make life worth watching",                                    "icon" : "vimeo.png"],
+            ["title" : "Github",    "subtitle" : "How people build software",                                   "icon" : "github.png"]
+            ])
+        self.bsdFourth.setDataSource(fourthOptions)
     }
 
     override func didReceiveMemoryWarning() {
@@ -105,6 +123,46 @@ class ViewController: UIViewController, BSDropdownDelegate {
                 NSLog("bsdFirst selected item change : \(item.objectForKey("value") as! String)")
             }
         }
+    }
+    
+    // -- Mark: BSDropdownDataSource
+    func itemHeightForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> CGFloat {
+        return 90.0
+    }
+    
+    func itemForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> UITableViewCell {
+        tableView.registerNib(UINib(nibName: "CustomTableViewCell", bundle: nil), forCellReuseIdentifier: "customTableViewCell")
+        let cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier("customTableViewCell", forIndexPath: indexPath)
+        if let cellInfoArray = item {
+            
+            let imgIcon = cell.viewWithTag(1) as! UIImageView
+            let lblTitle = cell.viewWithTag(2) as! UILabel
+            let lblSubtitle = cell.viewWithTag(3) as! UILabel
+            
+            if let icon = cellInfoArray.objectForKey("icon") as? String {
+                imgIcon.image = UIImage(named: icon)
+            }
+            else{
+                imgIcon.image = nil
+            }
+            
+            if let title = cellInfoArray.objectForKey("title") as? String {
+                lblTitle.text = title
+            }
+            else{
+                lblTitle.text = ""
+            }
+            
+            if let subtitle = cellInfoArray.objectForKey("subtitle") as? String {
+                lblSubtitle.text = subtitle
+            }
+            else{
+                lblSubtitle.text = ""
+            }
+            
+        }
+        
+        return cell
     }
 }
 

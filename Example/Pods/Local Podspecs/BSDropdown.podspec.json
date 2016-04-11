@@ -1,16 +1,16 @@
 {
   "name": "BSDropdown",
-  "version": "0.1.0",
-  "summary": "A short description of BSDropdown.",
-  "description": "",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/BSDropdown",
+  "version": "1.1",
+  "summary": "Simple pop up dialog to use as dropdown in iOS.",
+  "description": "This plugin created to make another kind of dropdown in iOS. Sometimes the picker view does not enough because of limitation in visible options.",
+  "homepage": "https://github.com/icemanbsi/BSDropdown",
   "license": "MIT",
   "authors": {
     "Bobby Stenly": "iceman.bsi@gmail.com"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/BSDropdown.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/icemanbsi/BSDropdown.git",
+    "tag": "1.1"
   },
   "platforms": {
     "ios": "8.0"
