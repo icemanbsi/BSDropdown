@@ -1,12 +1,15 @@
 //
 //  BSDropdown.swift
-//  V1.2
+//  V1.3
 //
 //  Items selector with a pop up table list view.
 //  You can use a NSMutableArray of NSDictionary for the data source
 //
 //  Created by Bobby Stenly Irawan ( iceman.bsi@gmail.com - http://bobbystenly.com ) on 11/21/15.
 //  Copyright © 2015 Bobby Stenly Irawan. All rights reserved.
+//
+//  New in V1.3
+//  - change viewController into weak var
 //
 //  New in V1.2
 //  - added DataSource Protocol for custom tableview cell / layout
@@ -30,7 +33,7 @@ public protocol BSDropdownDataSource {
 
 public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     //required attributes
-    public var viewController: UIViewController?
+    public weak var viewController: UIViewController?
     //--end of required attributes
     
     //optional attributes
