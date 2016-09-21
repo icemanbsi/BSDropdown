@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "BSDropdown"
-  s.version          = "1.3"
+  s.version          = "2.0.0"
   s.summary          = "Simple pop up dialog to use as dropdown in iOS."
 
 # This description is used to generate tags and improve search results.
@@ -32,7 +32,7 @@ This plugin created to make another kind of dropdown in iOS. Sometimes the picke
 
   s.source_files = 'Pod/Classes/**/*'
   s.resource_bundles = {
-    'BSDropdown' => ['Pod/Assets/*.png']
+    # 'BSDropdown' => ['Pod/Assets/*.png']
   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'

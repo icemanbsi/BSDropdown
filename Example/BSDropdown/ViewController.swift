@@ -30,7 +30,7 @@ class ViewController: UIViewController, BSDropdownDelegate, BSDropdownDataSource
         self.bsdFirst.setup()
         let firstOptions = NSMutableArray()
         for i in 0 ..< 50 {
-            firstOptions.addObject(["title" : "Option \(i+1)", "value" : "opt \(i+1)"])
+            firstOptions.add(["title" : "Option \(i+1)", "value" : "opt \(i+1)"])
         }
         self.bsdFirst.setDataSource(firstOptions)
         
@@ -117,43 +117,43 @@ class ViewController: UIViewController, BSDropdownDelegate, BSDropdownDataSource
 
 
     // -- Mark: BSDropdownDelegate
-    func onDropdownSelectedItemChange(dropdown: BSDropdown, selectedItem: NSDictionary?) {
+    func onDropdownSelectedItemChange(_ dropdown: BSDropdown, selectedItem: NSDictionary?) {
         if dropdown == self.bsdFirst {
             if let item = selectedItem {
-                NSLog("bsdFirst selected item change : \(item.objectForKey("value") as! String)")
+                NSLog("bsdFirst selected item change : \(item.object(forKey: "value") as! String)")
             }
         }
     }
     
     // -- Mark: BSDropdownDataSource
-    func itemHeightForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> CGFloat {
+    func itemHeightForRowAtIndexPath(_ dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: IndexPath) -> CGFloat {
         return 90.0
     }
     
-    func itemForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> UITableViewCell {
-        tableView.registerNib(UINib(nibName: "CustomTableViewCell", bundle: nil), forCellReuseIdentifier: "customTableViewCell")
-        let cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier("customTableViewCell", forIndexPath: indexPath)
+    func itemForRowAtIndexPath(_ dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: IndexPath) -> UITableViewCell {
+        tableView.register(UINib(nibName: "CustomTableViewCell", bundle: nil), forCellReuseIdentifier: "customTableViewCell")
+        let cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "customTableViewCell", for: indexPath)
         if let cellInfoArray = item {
             
             let imgIcon = cell.viewWithTag(1) as! UIImageView
             let lblTitle = cell.viewWithTag(2) as! UILabel
             let lblSubtitle = cell.viewWithTag(3) as! UILabel
             
-            if let icon = cellInfoArray.objectForKey("icon") as? String {
+            if let icon = cellInfoArray.object(forKey: "icon") as? String {
                 imgIcon.image = UIImage(named: icon)
             }
             else{
                 imgIcon.image = nil
             }
             
-            if let title = cellInfoArray.objectForKey("title") as? String {
+            if let title = cellInfoArray.object(forKey: "title") as? String {
                 lblTitle.text = title
             }
             else{
                 lblTitle.text = ""
             }
             
-            if let subtitle = cellInfoArray.objectForKey("subtitle") as? String {
+            if let subtitle = cellInfoArray.object(forKey: "subtitle") as? String {
                 lblSubtitle.text = subtitle
             }
             else{

@@ -17,68 +17,79 @@
 
 import Foundation
 import UIKit
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
 
 public protocol BSDropdownDelegate {
-    func onDropdownSelectedItemChange(dropdown: BSDropdown, selectedItem: NSDictionary?)
+    func onDropdownSelectedItemChange(_ dropdown: BSDropdown, selectedItem: NSDictionary?)
 }
 extension BSDropdownDelegate {
-    func onDropdownSelectedItemChange(dropdown: BSDropdown, selectedItem: NSDictionary?) {
+    func onDropdownSelectedItemChange(_ dropdown: BSDropdown, selectedItem: NSDictionary?) {
     }
 }
 
 public protocol BSDropdownDataSource {
-    func itemHeightForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> CGFloat
-    func itemForRowAtIndexPath(dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: NSIndexPath) -> UITableViewCell
+    func itemHeightForRowAtIndexPath(_ dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: IndexPath) -> CGFloat
+    func itemForRowAtIndexPath(_ dropdown: BSDropdown, tableView: UITableView, item: NSDictionary?, indexPath: IndexPath) -> UITableViewCell
 }
 
-public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
+open class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     //required attributes
-    public weak var viewController: UIViewController?
+    open weak var viewController: UIViewController?
     //--end of required attributes
     
     //optional attributes
-    public var delegate: BSDropdownDelegate!
-    public var dataSource: BSDropdownDataSource!
-    public var modalBackgroundColor: UIColor = UIColor(white: 0, alpha: 0.5)
-    public var selectorBackgroundColor: UIColor = UIColor(white: 1, alpha: 1)
-    public var headerBackgroundColor: UIColor = UIColor(white: 0, alpha: 1)
-    public var titleColor: UIColor = UIColor(white: 1, alpha: 1)
-    public var cancelButtonBackgroundColor: UIColor = UIColor(white: 0, alpha: 0)
-    public var doneButtonBackgroundColor: UIColor = UIColor(white: 0, alpha: 0)
-    public var cancelTextColor: UIColor = UIColor(white: 0.8, alpha: 1)
-    public var doneTextColor: UIColor = UIColor(white: 0.8, alpha: 1)
-    public var itemTextColor: UIColor = UIColor(white: 0, alpha: 1)
-    public var itemTintColor: UIColor = UIColor(white: 0, alpha: 0.8)
-    public var titleFont:UIFont? = UIFont(name: "Helvetica", size: 16)
-    public var buttonFont:UIFont? = UIFont(name: "Helvetica", size: 13)
-    public var itemFont:UIFont? = UIFont(name: "Helvetica", size: 13)
-    public var title: String = "title"
-    public var cancelButtonTitle: String = "Cancel"
-    public var doneButtonTitle: String = "Done"
-    public var defaultTitle: String = "Select Item"
-    public var titleKey: String = "title"
-    public var enableSearch: Bool = false
-    public var searchPlaceholder: String = "Search"
-    public var fixedDisplayedTitle: Bool = false
-    public var hideDoneButton: Bool = false
+    open var delegate: BSDropdownDelegate!
+    open var dataSource: BSDropdownDataSource!
+    open var modalBackgroundColor: UIColor = UIColor(white: 0, alpha: 0.5)
+    open var selectorBackgroundColor: UIColor = UIColor(white: 1, alpha: 1)
+    open var headerBackgroundColor: UIColor = UIColor(white: 0, alpha: 1)
+    open var titleColor: UIColor = UIColor(white: 1, alpha: 1)
+    open var cancelButtonBackgroundColor: UIColor = UIColor(white: 0, alpha: 0)
+    open var doneButtonBackgroundColor: UIColor = UIColor(white: 0, alpha: 0)
+    open var cancelTextColor: UIColor = UIColor(white: 0.8, alpha: 1)
+    open var doneTextColor: UIColor = UIColor(white: 0.8, alpha: 1)
+    open var itemTextColor: UIColor = UIColor(white: 0, alpha: 1)
+    open var itemTintColor: UIColor = UIColor(white: 0, alpha: 0.8)
+    open var titleFont:UIFont? = UIFont(name: "Helvetica", size: 16)
+    open var buttonFont:UIFont? = UIFont(name: "Helvetica", size: 13)
+    open var itemFont:UIFont? = UIFont(name: "Helvetica", size: 13)
+    open var title: String = "title"
+    open var cancelButtonTitle: String = "Cancel"
+    open var doneButtonTitle: String = "Done"
+    open var defaultTitle: String = "Select Item"
+    open var titleKey: String = "title"
+    open var enableSearch: Bool = false
+    open var searchPlaceholder: String = "Search"
+    open var fixedDisplayedTitle: Bool = false
+    open var hideDoneButton: Bool = false
     //-- end of optional attributes
     
-    private var selectedIndex: Int = -1
-    private var tempSelectedIndex: Int = -1
-    private var data: NSMutableArray?
-    private var originalData: NSMutableArray?
+    fileprivate var selectedIndex: Int = -1
+    fileprivate var tempSelectedIndex: Int = -1
+    fileprivate var data: NSMutableArray?
+    fileprivate var originalData: NSMutableArray?
     
-    private var selectorModalView: UIView!
-    private var selectorView: UIView!
-    private var selectorHeaderView: UIView!
-    private var lblSelectorTitleLabel: UILabel!
-    private var btnSelectorCancel: UIButton!
-    private var btnSelectorDone: UIButton!
-    private var selectorTableView: UITableView!
-    private var searchView: UIView!
-    private var txtKeyword: UITextField!
+    fileprivate var selectorModalView: UIView!
+    fileprivate var selectorView: UIView!
+    fileprivate var selectorHeaderView: UIView!
+    fileprivate var lblSelectorTitleLabel: UILabel!
+    fileprivate var btnSelectorCancel: UIButton!
+    fileprivate var btnSelectorDone: UIButton!
+    fileprivate var selectorTableView: UITableView!
+    fileprivate var searchView: UIView!
+    fileprivate var txtKeyword: UITextField!
     
-    public func setup(){
+    open func setup(){
         if let vc = self.viewController {
             
             self.selectorModalView = UIView()
@@ -86,31 +97,31 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
             self.selectorModalView.translatesAutoresizingMaskIntoConstraints = false
             vc.view.addSubview(self.selectorModalView)
             vc.view.addConstraint(NSLayoutConstraint(item: self.selectorModalView,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: vc.view,
-                attribute: NSLayoutAttribute.Top,
+                attribute: NSLayoutAttribute.top,
                 multiplier: 1,
                 constant: 0))
             vc.view.addConstraint(NSLayoutConstraint(item: self.selectorModalView,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.bottom,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: vc.view,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1,
                 constant: 0))
             vc.view.addConstraint(NSLayoutConstraint(item: self.selectorModalView,
-                attribute: NSLayoutAttribute.Trailing,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.trailing,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: vc.view,
-                attribute: NSLayoutAttribute.Trailing,
+                attribute: NSLayoutAttribute.trailing,
                 multiplier: 1,
                 constant: 0))
             vc.view.addConstraint(NSLayoutConstraint(item: self.selectorModalView,
-                attribute: NSLayoutAttribute.Leading,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.leading,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: vc.view,
-                attribute: NSLayoutAttribute.Leading,
+                attribute: NSLayoutAttribute.leading,
                 multiplier: 1,
                 constant: 0))
             
@@ -119,31 +130,31 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
             self.selectorView.translatesAutoresizingMaskIntoConstraints = false
             self.selectorModalView.addSubview(self.selectorView)
             self.selectorModalView.addConstraint(NSLayoutConstraint(item: self.selectorView,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorModalView,
-                attribute: NSLayoutAttribute.Top,
+                attribute: NSLayoutAttribute.top,
                 multiplier: 1,
                 constant: 50))
             self.selectorModalView.addConstraint(NSLayoutConstraint(item: self.selectorView,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.bottom,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorModalView,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1,
                 constant: -50))
             self.selectorModalView.addConstraint(NSLayoutConstraint(item: self.selectorView,
-                attribute: NSLayoutAttribute.Leading,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.leading,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorModalView,
-                attribute: NSLayoutAttribute.Leading,
+                attribute: NSLayoutAttribute.leading,
                 multiplier: 1,
                 constant: 25))
             self.selectorModalView.addConstraint(NSLayoutConstraint(item: self.selectorView,
-                attribute: NSLayoutAttribute.Trailing,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.trailing,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorModalView,
-                attribute: NSLayoutAttribute.Trailing,
+                attribute: NSLayoutAttribute.trailing,
                 multiplier: 1,
                 constant: -25))
             
@@ -152,31 +163,31 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
             self.selectorHeaderView.translatesAutoresizingMaskIntoConstraints = false
             self.selectorView.addSubview(self.selectorHeaderView)
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorView,
-                attribute: NSLayoutAttribute.Top,
+                attribute: NSLayoutAttribute.top,
                 multiplier: 1,
                 constant: 0))
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Leading,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.leading,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorView,
-                attribute: NSLayoutAttribute.Leading,
+                attribute: NSLayoutAttribute.leading,
                 multiplier: 1,
                 constant: 0))
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Trailing,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.trailing,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorView,
-                attribute: NSLayoutAttribute.Trailing,
+                attribute: NSLayoutAttribute.trailing,
                 multiplier: 1,
                 constant: 0))
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.height,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
+                attribute: NSLayoutAttribute.notAnAttribute,
                 multiplier: 1,
                 constant: 56))
             
@@ -189,109 +200,109 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
             self.lblSelectorTitleLabel.translatesAutoresizingMaskIntoConstraints = false
             self.selectorHeaderView.addSubview(self.lblSelectorTitleLabel)
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.lblSelectorTitleLabel,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerX,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.CenterX,
+                attribute: NSLayoutAttribute.centerX,
                 multiplier: 1,
                 constant: 0))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.lblSelectorTitleLabel,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerY,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.CenterY,
+                attribute: NSLayoutAttribute.centerY,
                 multiplier: 1,
                 constant: 0))
             
             self.btnSelectorCancel = UIButton()
-            self.btnSelectorCancel.setTitle(self.cancelButtonTitle, forState: UIControlState.Normal)
+            self.btnSelectorCancel.setTitle(self.cancelButtonTitle, for: UIControlState())
             self.btnSelectorCancel.titleLabel?.textColor = self.cancelTextColor
             self.btnSelectorCancel.backgroundColor = self.cancelButtonBackgroundColor
-            self.btnSelectorCancel.titleLabel?.textAlignment = NSTextAlignment.Left
+            self.btnSelectorCancel.titleLabel?.textAlignment = NSTextAlignment.left
             if let font = self.buttonFont {
                 self.btnSelectorCancel.titleLabel?.font = font
             }
             self.btnSelectorCancel.translatesAutoresizingMaskIntoConstraints = false
             self.selectorHeaderView.addSubview(self.btnSelectorCancel)
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorCancel,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Top,
+                attribute: NSLayoutAttribute.top,
                 multiplier: 1,
                 constant: 8))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorCancel,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.bottom,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1,
                 constant: -8))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorCancel,
-                attribute: NSLayoutAttribute.Leading,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.leading,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Leading,
+                attribute: NSLayoutAttribute.leading,
                 multiplier: 1,
                 constant: 8))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorCancel,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.height,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
+                attribute: NSLayoutAttribute.notAnAttribute,
                 multiplier: 1,
                 constant: 40))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorCancel,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.width,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
+                attribute: NSLayoutAttribute.notAnAttribute,
                 multiplier: 1,
                 constant: 50))
             
             self.btnSelectorDone = UIButton()
-            self.btnSelectorDone.setTitle(self.doneButtonTitle, forState: UIControlState.Normal)
+            self.btnSelectorDone.setTitle(self.doneButtonTitle, for: UIControlState())
             self.btnSelectorDone.titleLabel?.textColor = self.doneTextColor
             self.btnSelectorDone.backgroundColor = self.doneButtonBackgroundColor
-            self.btnSelectorDone.titleLabel?.textAlignment = NSTextAlignment.Right
+            self.btnSelectorDone.titleLabel?.textAlignment = NSTextAlignment.right
             if let font = self.buttonFont {
                 self.btnSelectorDone.titleLabel?.font = font
             }
             self.btnSelectorDone.translatesAutoresizingMaskIntoConstraints = false
             self.selectorHeaderView.addSubview(self.btnSelectorDone)
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorDone,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Top,
+                attribute: NSLayoutAttribute.top,
                 multiplier: 1,
                 constant: 8))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorDone,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.bottom,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1,
                 constant: -8))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorDone,
-                attribute: NSLayoutAttribute.Trailing,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.trailing,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Trailing,
+                attribute: NSLayoutAttribute.trailing,
                 multiplier: 1,
                 constant: -8))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorDone,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.height,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
+                attribute: NSLayoutAttribute.notAnAttribute,
                 multiplier: 1,
                 constant: 40))
             self.selectorHeaderView.addConstraint(NSLayoutConstraint(item: self.btnSelectorDone,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.width,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
+                attribute: NSLayoutAttribute.notAnAttribute,
                 multiplier: 1,
                 constant: 50))
             
@@ -300,124 +311,124 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
                 self.searchView.translatesAutoresizingMaskIntoConstraints = false
                 self.selectorView.addSubview(self.searchView)
                 self.selectorView.addConstraint(NSLayoutConstraint(item: self.searchView,
-                    attribute: NSLayoutAttribute.Top,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.top,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.selectorHeaderView,
-                    attribute: NSLayoutAttribute.Bottom,
+                    attribute: NSLayoutAttribute.bottom,
                     multiplier: 1,
                     constant: 0))
                 self.selectorView.addConstraint(NSLayoutConstraint(item: self.searchView,
-                    attribute: NSLayoutAttribute.Leading,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.leading,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.selectorView,
-                    attribute: NSLayoutAttribute.Leading,
+                    attribute: NSLayoutAttribute.leading,
                     multiplier: 1,
                     constant: 0))
                 self.selectorView.addConstraint(NSLayoutConstraint(item: self.searchView,
-                    attribute: NSLayoutAttribute.Trailing,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.trailing,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.selectorView,
-                    attribute: NSLayoutAttribute.Trailing,
+                    attribute: NSLayoutAttribute.trailing,
                     multiplier: 1,
                     constant: 0))
                 self.selectorView.addConstraint(NSLayoutConstraint(item: self.searchView,
-                    attribute: NSLayoutAttribute.Height,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.height,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: nil,
-                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    attribute: NSLayoutAttribute.notAnAttribute,
                     multiplier: 1,
                     constant: 46))
                 
                 self.txtKeyword = UITextField()
-                self.txtKeyword.borderStyle = .RoundedRect
+                self.txtKeyword.borderStyle = .roundedRect
                 self.txtKeyword.translatesAutoresizingMaskIntoConstraints = false
                 self.searchView.addSubview(self.txtKeyword)
                 self.searchView.addConstraint(NSLayoutConstraint(item: self.txtKeyword,
-                    attribute: NSLayoutAttribute.Top,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.top,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.searchView,
-                    attribute: NSLayoutAttribute.Top,
+                    attribute: NSLayoutAttribute.top,
                     multiplier: 1,
                     constant: 8))
                 self.searchView.addConstraint(NSLayoutConstraint(item: self.txtKeyword,
-                    attribute: NSLayoutAttribute.Bottom,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.bottom,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.searchView,
-                    attribute: NSLayoutAttribute.Bottom,
+                    attribute: NSLayoutAttribute.bottom,
                     multiplier: 1,
                     constant: -8))
                 self.searchView.addConstraint(NSLayoutConstraint(item: self.txtKeyword,
-                    attribute: NSLayoutAttribute.Leading,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.leading,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.searchView,
-                    attribute: NSLayoutAttribute.Leading,
+                    attribute: NSLayoutAttribute.leading,
                     multiplier: 1,
                     constant: 8))
                 self.searchView.addConstraint(NSLayoutConstraint(item: self.txtKeyword,
-                    attribute: NSLayoutAttribute.Trailing,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.trailing,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: self.searchView,
-                    attribute: NSLayoutAttribute.Trailing,
+                    attribute: NSLayoutAttribute.trailing,
                     multiplier: 1,
                     constant: -8))
                 
                 self.txtKeyword.placeholder = self.searchPlaceholder
                 self.txtKeyword.font = self.itemFont
-                self.txtKeyword.addTarget(self, action: #selector(BSDropdown.txtKeywordValueChanged(_:)), forControlEvents: UIControlEvents.EditingChanged)
+                self.txtKeyword.addTarget(self, action: #selector(BSDropdown.txtKeywordValueChanged(_:)), for: UIControlEvents.editingChanged)
             }
             
             self.selectorTableView = UITableView()
             self.selectorTableView.translatesAutoresizingMaskIntoConstraints = false
             self.selectorTableView.delegate = self
             self.selectorTableView.dataSource = self
-            self.selectorTableView.separatorStyle = .None
+            self.selectorTableView.separatorStyle = .none
             self.selectorView.addSubview(self.selectorTableView)
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorTableView,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.enableSearch ? self.searchView : self.selectorHeaderView,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1,
                 constant: 0))
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorTableView,
-                attribute: NSLayoutAttribute.Leading,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.leading,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorView,
-                attribute: NSLayoutAttribute.Leading,
+                attribute: NSLayoutAttribute.leading,
                 multiplier: 1,
                 constant: 0))
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorTableView,
-                attribute: NSLayoutAttribute.Trailing,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.trailing,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorView,
-                attribute: NSLayoutAttribute.Trailing,
+                attribute: NSLayoutAttribute.trailing,
                 multiplier: 1,
                 constant: 0))
             self.selectorView.addConstraint(NSLayoutConstraint(item: self.selectorTableView,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.bottom,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.selectorView,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1,
                 constant: 0))
             
-            self.btnSelectorCancel.addTarget(self, action: #selector(BSDropdown.btnSelectorCancelTouched(_:)), forControlEvents: UIControlEvents.TouchUpInside)
-            self.btnSelectorDone.addTarget(self, action: #selector(BSDropdown.btnSelectorDoneTouched(_:)), forControlEvents: UIControlEvents.TouchUpInside)
-            self.addTarget(self, action: #selector(BSDropdown.bsdDropdownClicked(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+            self.btnSelectorCancel.addTarget(self, action: #selector(BSDropdown.btnSelectorCancelTouched(_:)), for: UIControlEvents.touchUpInside)
+            self.btnSelectorDone.addTarget(self, action: #selector(BSDropdown.btnSelectorDoneTouched(_:)), for: UIControlEvents.touchUpInside)
+            self.addTarget(self, action: #selector(BSDropdown.bsdDropdownClicked(_:)), for: UIControlEvents.touchUpInside)
             
             if self.hideDoneButton {
-                self.btnSelectorDone.hidden = true
+                self.btnSelectorDone.isHidden = true
             }
             
-            self.selectorModalView.hidden = true
-            self.setTitle(self.defaultTitle, forState: UIControlState.Normal)
+            self.selectorModalView.isHidden = true
+            self.setTitle(self.defaultTitle, for: UIControlState())
         }
         else{
             NSLog("BSDropdown Error : Please set the ViewController first")
         }
     }
     
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let values = self.data {
             return values.count
         }
@@ -426,23 +437,23 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
         }
     }
     
-    public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let cellInfoArray = self.data?.objectAtIndex(indexPath.row) as! NSDictionary
+    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let cellInfoArray = self.data?.object(at: (indexPath as NSIndexPath).row) as! NSDictionary
         if self.dataSource != nil {
             return self.dataSource.itemHeightForRowAtIndexPath(self, tableView: tableView, item: cellInfoArray, indexPath: indexPath)
         }
         else {
-            let title = cellInfoArray.objectForKey(self.titleKey) as! String
+            let title = cellInfoArray.object(forKey: self.titleKey) as! String
             let minHeight:CGFloat = 35.0
             var height:CGFloat = 16.0
             var maxWidth:CGFloat = tableView.bounds.size.width - 16.0
-            if indexPath.row == self.tempSelectedIndex {
+            if (indexPath as NSIndexPath).row == self.tempSelectedIndex {
                 maxWidth -= 39.0
             }
             
-            var titleHeight : CGFloat = title.boundingRectWithSize(
-                CGSizeMake(maxWidth, 99999),
-                options: NSStringDrawingOptions.UsesLineFragmentOrigin,
+            var titleHeight : CGFloat = title.boundingRect(
+                with: CGSize(width: maxWidth, height: 99999),
+                options: NSStringDrawingOptions.usesLineFragmentOrigin,
                 attributes: [NSFontAttributeName: self.itemFont!],
                 context: nil
                 ).size.height
@@ -455,27 +466,27 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
         }
     }
     
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cellInfoArray = self.data?.objectAtIndex(indexPath.row) as! NSDictionary
+    open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cellInfoArray = self.data?.object(at: (indexPath as NSIndexPath).row) as! NSDictionary
         
         if self.dataSource != nil {
             let cell = self.dataSource.itemForRowAtIndexPath(self, tableView: tableView, item: cellInfoArray, indexPath: indexPath)
             
-            cell.selectionStyle = .None
+            cell.selectionStyle = .none
             cell.tintColor = self.itemTintColor
             
-            if indexPath.row == self.tempSelectedIndex {
-                cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            if (indexPath as NSIndexPath).row == self.tempSelectedIndex {
+                cell.accessoryType = UITableViewCellAccessoryType.checkmark
             }
             else{
-                cell.accessoryType = UITableViewCellAccessoryType.None
+                cell.accessoryType = UITableViewCellAccessoryType.none
             }
             
             return cell
         }
         else {
             let reuseId = "BSDropdownTableViewCell"
-            var cell: UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(reuseId)
+            var cell: UITableViewCell? = tableView.dequeueReusableCell(withIdentifier: reuseId)
             let lblTitle: UILabel!
             let borderBottom: UIView!
             if let _ = cell {
@@ -483,31 +494,31 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
                 borderBottom = cell?.viewWithTag(2)
             }
             else{
-                cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: reuseId)
+                cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: reuseId)
                 
                 //add label
                 lblTitle = UILabel()
                 lblTitle.translatesAutoresizingMaskIntoConstraints = false
                 cell!.addSubview(lblTitle)
                 cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
-                    attribute: NSLayoutAttribute.CenterY,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.centerY,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: cell,
-                    attribute: NSLayoutAttribute.CenterY,
+                    attribute: NSLayoutAttribute.centerY,
                     multiplier: 1,
                     constant: 0))
                 cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
-                    attribute: NSLayoutAttribute.Leading,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.leading,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: cell,
-                    attribute: NSLayoutAttribute.Leading,
+                    attribute: NSLayoutAttribute.leading,
                     multiplier: 1,
                     constant: 8))
                 cell!.addConstraint(NSLayoutConstraint(item: lblTitle,
-                    attribute: NSLayoutAttribute.Trailing,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.trailing,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: cell,
-                    attribute: NSLayoutAttribute.Trailing,
+                    attribute: NSLayoutAttribute.trailing,
                     multiplier: 1,
                     constant: 8))
                 lblTitle.tag = 1
@@ -520,55 +531,55 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
                 borderBottom.translatesAutoresizingMaskIntoConstraints = false
                 cell!.addSubview(borderBottom)
                 cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                    attribute: NSLayoutAttribute.Left,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.left,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: cell,
-                    attribute: NSLayoutAttribute.Left,
+                    attribute: NSLayoutAttribute.left,
                     multiplier: 1,
                     constant: 0))
                 cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                    attribute: NSLayoutAttribute.Right,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.right,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: cell,
-                    attribute: NSLayoutAttribute.Right,
+                    attribute: NSLayoutAttribute.right,
                     multiplier: 1,
                     constant: 0))
                 cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                    attribute: NSLayoutAttribute.Bottom,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.bottom,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: cell,
-                    attribute: NSLayoutAttribute.Bottom,
+                    attribute: NSLayoutAttribute.bottom,
                     multiplier: 1,
                     constant: 0))
                 cell!.addConstraint(NSLayoutConstraint(item: borderBottom,
-                    attribute: NSLayoutAttribute.Height,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.height,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: nil,
-                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    attribute: NSLayoutAttribute.notAnAttribute,
                     multiplier: 1,
                     constant: 1))
                 
-                cell?.selectionStyle = .None
+                cell?.selectionStyle = .none
                 cell?.tintColor = self.itemTintColor
             }
             
-            lblTitle.text = cellInfoArray.objectForKey(self.titleKey) as? String
+            lblTitle.text = cellInfoArray.object(forKey: self.titleKey) as? String
             
-            if indexPath.row == self.tempSelectedIndex {
-                cell?.accessoryType = UITableViewCellAccessoryType.Checkmark
+            if (indexPath as NSIndexPath).row == self.tempSelectedIndex {
+                cell?.accessoryType = UITableViewCellAccessoryType.checkmark
             }
             else{
-                cell?.accessoryType = UITableViewCellAccessoryType.None
+                cell?.accessoryType = UITableViewCellAccessoryType.none
             }
             
             return cell!
         }
     }
     
-    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let values = self.data {
-            if indexPath.row > -1 && indexPath.row < values.count {
-                self.tempSelectedIndex = indexPath.row
+            if (indexPath as NSIndexPath).row > -1 && (indexPath as NSIndexPath).row < values.count {
+                self.tempSelectedIndex = (indexPath as NSIndexPath).row
                 self.selectorTableView.reloadData()
                 if self.hideDoneButton {
                     self.btnSelectorDoneTouched(self.btnSelectorDone)
@@ -580,24 +591,24 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
         }
     }
     
-    public func bsdDropdownClicked(sender: AnyObject){
+    open func bsdDropdownClicked(_ sender: AnyObject){
         if let vc = self.viewController {
             self.selectorTableView.reloadData()
             self.tempSelectedIndex = self.selectedIndex
-            self.selectorModalView.hidden = false
+            self.selectorModalView.isHidden = false
             self.selectorModalView.alpha = 0
-            vc.view.bringSubviewToFront(self.selectorModalView)
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
+            vc.view.bringSubview(toFront: self.selectorModalView)
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
                 self.selectorModalView.alpha = 1
             })
         }
     }
     
-    public func btnSelectorCancelTouched(sender: AnyObject){
-        UIView.animateWithDuration(0.5, animations: { () -> Void in
+    open func btnSelectorCancelTouched(_ sender: AnyObject){
+        UIView.animate(withDuration: 0.5, animations: { () -> Void in
             self.selectorModalView.alpha = 0
             }, completion: { (Bool) -> Void in
-                self.selectorModalView.hidden = true
+                self.selectorModalView.isHidden = true
                 if self.enableSearch {
                     self.txtKeyword.text = ""
                     self.filterData("")
@@ -605,12 +616,12 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
         })
     }
     
-    public func btnSelectorDoneTouched(sender: AnyObject){
+    open func btnSelectorDoneTouched(_ sender: AnyObject){
         self.selectedIndex = self.tempSelectedIndex
         if self.tempSelectedIndex > -1 && self.tempSelectedIndex < self.data?.count {
-            if let cellInfoArray = self.data?.objectAtIndex(self.tempSelectedIndex) as? NSDictionary {
-                if let idx = cellInfoArray.objectForKey("bsd_index") as? NSNumber {
-                    self.selectedIndex = idx.integerValue
+            if let cellInfoArray = self.data?.object(at: self.tempSelectedIndex) as? NSDictionary {
+                if let idx = cellInfoArray.object(forKey: "bsd_index") as? NSNumber {
+                    self.selectedIndex = idx.intValue
                 }
             }
         }
@@ -626,43 +637,43 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
         }
     }
     
-    private func setDisplayedTitle(){
+    fileprivate func setDisplayedTitle(){
         //set title
         if let value = self.getSelectedValue(){
             if !self.fixedDisplayedTitle {
-                self.setTitle(value.objectForKey(self.titleKey) as? String, forState: UIControlState.Normal)
+                self.setTitle(value.object(forKey: self.titleKey) as? String, for: UIControlState())
             }
             else {
-                self.setTitle(self.defaultTitle, forState: UIControlState.Normal)
+                self.setTitle(self.defaultTitle, for: UIControlState())
             }
         }
         else{
-            self.setTitle(self.defaultTitle, forState: UIControlState.Normal)
+            self.setTitle(self.defaultTitle, for: UIControlState())
         }
     }
     
-    public func txtKeywordValueChanged(sender: AnyObject) {
+    open func txtKeywordValueChanged(_ sender: AnyObject) {
         self.filterData(self.txtKeyword.text!)
         self.selectorTableView.reloadData()
     }
     
-    private func filterData(keyword: String){
+    fileprivate func filterData(_ keyword: String){
         self.data?.removeAllObjects()
         self.tempSelectedIndex = -1
         var i: Int = 0
         if let oriData = self.originalData {
             for item in oriData {
                 if let cellInfoArray = item as? NSMutableDictionary {
-                    if keyword == "" || (cellInfoArray.objectForKey(self.titleKey) as! String).lowercaseString.rangeOfString( keyword.lowercaseString ) != nil {
-                        cellInfoArray.setValue(NSNumber(integer: i), forKey: "bsd_index")
-                        self.data?.addObject(cellInfoArray)
+                    if keyword == "" || (cellInfoArray.object(forKey: self.titleKey) as! String).lowercased().range( of: keyword.lowercased() ) != nil {
+                        cellInfoArray.setValue(NSNumber(value: i as Int), forKey: "bsd_index")
+                        self.data?.add(cellInfoArray)
                     }
                 }
                 else if let dict = item as? NSDictionary {
                     let cellInfoArray = NSMutableDictionary(dictionary: dict)
-                    if keyword == "" || (cellInfoArray.objectForKey(self.titleKey) as! String).lowercaseString.rangeOfString( keyword.lowercaseString ) != nil {
-                        cellInfoArray.setValue(NSNumber(integer: i), forKey: "bsd_index")
-                        self.data?.addObject(cellInfoArray)
+                    if keyword == "" || (cellInfoArray.object(forKey: self.titleKey) as! String).lowercased().range( of: keyword.lowercased() ) != nil {
+                        cellInfoArray.setValue(NSNumber(value: i as Int), forKey: "bsd_index")
+                        self.data?.add(cellInfoArray)
                     }
                 }
                 else{
@@ -675,25 +686,25 @@ public class BSDropdown:UIButton, UITableViewDelegate, UITableViewDataSource{
     }
     
     //public get set
-    public func setDataSource(dataSource: NSMutableArray){
+    open func setDataSource(_ dataSource: NSMutableArray){
         self.originalData = dataSource
         self.data = NSMutableArray()
         self.filterData("")
     }
     
-    public func setSelectedIndex(index: Int){
+    open func setSelectedIndex(_ index: Int){
         self.selectedIndex = index
         self.setDisplayedTitle()
     }
     
-    public func getSelectedIndex() -> Int {
+    open func getSelectedIndex() -> Int {
         return self.selectedIndex
     }
     
-    public func getSelectedValue() -> NSDictionary?{
+    open func getSelectedValue() -> NSDictionary?{
         if let dataSource = self.originalData {
             if self.selectedIndex > -1 && self.selectedIndex < dataSource.count{
-                return dataSource.objectAtIndex(self.selectedIndex) as? NSDictionary
+                return dataSource.object(at: self.selectedIndex) as? NSDictionary
             }
             else{
                 return nil
