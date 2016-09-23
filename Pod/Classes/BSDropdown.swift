@@ -1,6 +1,6 @@
 //
 //  BSDropdown.swift
-//  V2.0.1
+//  V2.0.2
 //
 //  Items selector with a pop up table list view.
 //  You can use a NSMutableArray of NSDictionary for the data source
@@ -8,7 +8,7 @@
 //  Created by Bobby Stenly Irawan ( iceman.bsi@gmail.com - http://bobbystenly.com ) on 11/21/15.
 //  Copyright © 2015 Bobby Stenly Irawan. All rights reserved.
 //
-//  New in V2.0.1
+//  New in V2.0.2
 //  - update to swift 3
 //
 //  New in V1.3
