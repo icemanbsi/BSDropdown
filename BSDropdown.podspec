@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "BSDropdown"
-  s.version          = "2.0.2"
+  s.version          = "2.0.3"
   s.summary          = "Simple pop up dialog to use as dropdown in iOS."
 
 # This description is used to generate tags and improve search results.
